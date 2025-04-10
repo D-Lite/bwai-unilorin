@@ -1,0 +1,79 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+.npm
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+yarn.lock
+package-lock.json
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+
+# Build outputs
+dist
+build
+.next
+out
+.nuxt
+storybook-static
+.turbo
+.swc
+.cache
+*.tsbuildinfo
+
+# Testing
+coverage
+.nyc_output
+
+# Environment variables
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# System files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editor directories and files
+.idea
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history
+*.code-workspace
+
+# Turborepo
+.turbo
+
+# Logs
+logs
+*.log
+
+# Debug
+.debug
+
+# Misc
+.vercel
+.netlify
+

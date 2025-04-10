@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]  // Enable the postgresqlExtensions. Currently in preview
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  extensions = [vector]
+}
+
+
+model User {
+  id           String       @id @default(cuid())
+  email        String       @unique
+  passwordHash String       
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  memberships  Membership[]
+  documents    Document[]   // Documents uploaded by this user
+}
+
+model StudyGroup {
+  id          String       @id @default(cuid())
+  name        String
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  memberships Membership[]
+  documents   Document[]
+}
+
+model Membership {
+  userId  String
+  groupId String
+  role    String   // e.g., 'OWNER', 'MEMBER'
+  joinedAt DateTime @default(now())
+
+  user  User       @relation(fields: [userId], references: [id], onDelete: Cascade) // If user deleted, remove membership
+  group StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade) // If group deleted, remove membership
+
+  @@id([userId, groupId]) // Composite primary key
+  @@index([userId])       // Index for faster lookup of user's groups
+  @@index([groupId])      // Index for faster lookup of group's members
+}
+
+model Document {
+  id         String     @id @default(cuid())
+  filename   String
+  filepath   String
+  mimetype   String
+  groupId    String
+  uploaderId String
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  group    StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  uploader User       @relation(fields: [uploaderId], references: [id], onDelete: Cascade) // Consider onDelete behavior
+
+  chunks DocChunk[]
+
+  @@index([groupId])
+}
+
+model DocChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  chunkIndex Int
+  text       String   @db.Text
+
+  // Use Unsupported to tell Prisma about the column type for migrations
+  // Specify the exact dimension (e.g., 768 for Gemini's embedding-001)
+  embedding  Unsupported("vector(768)")? // Mark as optional if needed, or handle nulls
+
+  createdAt DateTime @default(now())
+  document  Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([documentId, chunkIndex])
+}
