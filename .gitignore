@@ -77,3 +77,4 @@ logs
 .vercel
 .netlify
 
+apps/server/uploads/*

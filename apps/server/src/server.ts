@@ -1,25 +1,27 @@
 import express, {  Request, Response } from 'express';
 import dotenv from 'dotenv';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import authRoutes from './routes/authRoutes';
+import groupRoutes from './routes/groupRoutes';
+import documentRoutes from './routes/documentRoutes';
+import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 
+app.use(cors())
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
 
-if (!process.env.GEMINI_API_KEY) {
-    console.error('GEMINI_API_KEY is not set in the environment variables');
-    process.exit(1);
-}
+app.use('/api/auth', authRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api', documentRoutes); // Mount document/Q&A routes at /api/groups/:groupId/...
 
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
-
-app.get('/api/health', (req: Request, res: Response) => {
-    res.json({ status: 'ok', message: 'Server is running' });
-  });
-
+// Basic health check
+app.get('/', (req, res) => {
+    res.send('StudySphere Backend is running!');
+});
 
   app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
